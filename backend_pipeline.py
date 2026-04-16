@@ -159,7 +159,7 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
 
     score = retrieval.get("score", 0)
 
-    if score is not None and score < 0.75:
+    if score is not None and score < 0.70:
         return {
             "original_question": user_query,
             "input_language": language,
