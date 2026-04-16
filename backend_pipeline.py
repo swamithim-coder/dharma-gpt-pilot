@@ -1,0 +1,195 @@
+import os
+import sys
+from typing import Any, Dict, Optional
+
+from dotenv import load_dotenv
+from openai import OpenAI
+from qdrant_client import QdrantClient
+
+load_dotenv()
+
+COLLECTION_NAME = "dharma_qa_seed_en"
+
+
+def _get_openai_client() -> OpenAI:
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY not found in .env")
+    return OpenAI(api_key=api_key)
+
+
+def _get_qdrant_client() -> QdrantClient:
+    qdrant_url = os.getenv("QDRANT_URL")
+    qdrant_api_key = os.getenv("QDRANT_API_KEY")
+
+    if not qdrant_url:
+        raise RuntimeError("QDRANT_URL not found in .env")
+    if not qdrant_api_key:
+        raise RuntimeError("QDRANT_API_KEY not found in .env")
+
+    return QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
+
+
+def canonicalize_query(user_query: str, language: str) -> str:
+    """
+    Convert non-English user input into concise English for retrieval.
+    English queries pass through unchanged.
+    """
+    user_query = (user_query or "").strip()
+    if not user_query:
+        return ""
+
+    if language == "English":
+        return user_query
+
+    client = _get_openai_client()
+
+    response = client.responses.create(
+        model="gpt-5.4-mini",
+        input=[
+            {
+                "role": "system",
+                "content": (
+                    "Translate the user's query into concise natural English for backend retrieval. "
+                    "Return only the English question. Do not explain."
+                ),
+            },
+            {
+                "role": "user",
+                "content": user_query,
+            },
+        ],
+    )
+
+    return response.output_text.strip()
+
+
+def retrieve_top_match(canonical_query: str) -> Dict[str, Any]:
+    """
+    Retrieve the top Qdrant match for the canonical English query.
+    """
+    if not canonical_query.strip():
+        return {
+            "direct_answer": "No question provided.",
+            "source_basis": "No input",
+            "evidence": None,
+            "qualification": "Please enter a valid question.",
+            "confidence": "Low",
+            "matched_question": None,
+            "score": None,
+        }
+
+    oa_client = _get_openai_client()
+    qdrant = _get_qdrant_client()
+
+    embedding = oa_client.embeddings.create(
+        model="text-embedding-3-small",
+        input=canonical_query
+    ).data[0].embedding
+
+    results = qdrant.query_points(
+        collection_name=COLLECTION_NAME,
+        query=embedding,
+        limit=1
+    ).points
+
+    if not results:
+        return {
+            "direct_answer": "No reliable answer found yet in the current pilot corpus.",
+            "source_basis": "No matching source",
+            "evidence": None,
+            "qualification": "This topic may need corpus expansion or scholar review.",
+            "confidence": "Low",
+            "matched_question": None,
+            "score": None,
+        }
+
+    top = results[0]
+    payload = top.payload or {}
+
+    return {
+        "direct_answer": payload.get("answer", "No answer found."),
+        "source_basis": payload.get("source_basis", "Dharma seed Q&A"),
+        "evidence": f"Matched question = {payload.get('question', 'Unknown question')}",
+        "qualification": payload.get("qualification", "General foundational definition."),
+        "confidence": "High" if (top.score or 0) >= 0.70 else "Moderate",
+        "matched_question": payload.get("question"),
+        "score": top.score,
+    }
+
+
+def translate_output_if_needed(text: str, target_language: str) -> str:
+    """
+    Translate the final answer for front-end display when needed.
+    """
+    text = (text or "").strip()
+    if not text:
+        return ""
+
+    if target_language == "English":
+        return text
+
+    client = _get_openai_client()
+
+    response = client.responses.create(
+        model="gpt-5.4-mini",
+        input=[
+            {
+                "role": "system",
+                "content": (
+                    f"Translate the user's English text into natural {target_language}. "
+                    "Preserve important Sanskrit terms where appropriate. "
+                    "Return only the translated text."
+                ),
+            },
+            {
+                "role": "user",
+                "content": text,
+            },
+        ],
+    )
+
+    return response.output_text.strip()
+
+
+def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
+    """
+    End-to-end backend flow:
+    user query -> canonical English -> retrieval -> translated final answer
+    """
+    canonical_query = canonicalize_query(user_query, language)
+    retrieval = retrieve_top_match(canonical_query)
+
+    score = retrieval.get("score", 0)
+
+    # Safety threshold for weak or out-of-domain match
+    if score < 0.75:
+        return {
+            "original_question": user_query,
+            "input_language": language,
+            "canonical_query": canonical_query,
+            "direct_answer": "I do not currently have a reliable Dharma answer for this question. Please rephrase the question or consult a scholar.",
+            "source_basis": "No reliable match found",
+            "evidence": f"Top semantic score = {score:.2f}",
+            "qualification": "Answer not found / out of scope",
+            "confidence": "Low",
+            "matched_question": None,
+            "score": score,
+        }
+
+    display_answer = translate_output_if_needed(
+        retrieval["direct_answer"], language
+    )
+
+    return {
+        "original_question": user_query,
+        "input_language": language,
+        "canonical_query": canonical_query,
+        "direct_answer": display_answer,
+        "source_basis": retrieval.get("source_basis"),
+        "evidence": retrieval.get("evidence"),
+        "qualification": retrieval.get("qualification"),
+        "confidence": retrieval.get("confidence", "Unknown"),
+        "matched_question": retrieval.get("matched_question"),
+        "score": retrieval.get("score"),
+    }
