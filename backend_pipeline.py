@@ -1,5 +1,6 @@
 import os
 import sys
+import streamlit as st
 from typing import Any, Dict, Optional
 
 from dotenv import load_dotenv
@@ -11,30 +12,36 @@ load_dotenv()
 COLLECTION_NAME = "dharma_qa_seed_en"
 
 
+def _get_secret(name: str) -> Optional[str]:
+    value = os.getenv(name)
+    if value:
+        return value
+    try:
+        return st.secrets[name]
+    except Exception:
+        return None
+
+
 def _get_openai_client() -> OpenAI:
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = _get_secret("OPENAI_API_KEY")
     if not api_key:
-        raise RuntimeError("OPENAI_API_KEY not found in .env")
+        raise RuntimeError("OPENAI_API_KEY not found in .env or Streamlit secrets")
     return OpenAI(api_key=api_key)
 
 
 def _get_qdrant_client() -> QdrantClient:
-    qdrant_url = os.getenv("QDRANT_URL")
-    qdrant_api_key = os.getenv("QDRANT_API_KEY")
+    qdrant_url = _get_secret("QDRANT_URL")
+    qdrant_api_key = _get_secret("QDRANT_API_KEY")
 
     if not qdrant_url:
-        raise RuntimeError("QDRANT_URL not found in .env")
+        raise RuntimeError("QDRANT_URL not found in .env or Streamlit secrets")
     if not qdrant_api_key:
-        raise RuntimeError("QDRANT_API_KEY not found in .env")
+        raise RuntimeError("QDRANT_API_KEY not found in .env or Streamlit secrets")
 
     return QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
 
 
 def canonicalize_query(user_query: str, language: str) -> str:
-    """
-    Convert non-English user input into concise English for retrieval.
-    English queries pass through unchanged.
-    """
     user_query = (user_query or "").strip()
     if not user_query:
         return ""
@@ -65,9 +72,6 @@ def canonicalize_query(user_query: str, language: str) -> str:
 
 
 def retrieve_top_match(canonical_query: str) -> Dict[str, Any]:
-    """
-    Retrieve the top Qdrant match for the canonical English query.
-    """
     if not canonical_query.strip():
         return {
             "direct_answer": "No question provided.",
@@ -119,9 +123,6 @@ def retrieve_top_match(canonical_query: str) -> Dict[str, Any]:
 
 
 def translate_output_if_needed(text: str, target_language: str) -> str:
-    """
-    Translate the final answer for front-end display when needed.
-    """
     text = (text or "").strip()
     if not text:
         return ""
@@ -153,17 +154,12 @@ def translate_output_if_needed(text: str, target_language: str) -> str:
 
 
 def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
-    """
-    End-to-end backend flow:
-    user query -> canonical English -> retrieval -> translated final answer
-    """
     canonical_query = canonicalize_query(user_query, language)
     retrieval = retrieve_top_match(canonical_query)
 
     score = retrieval.get("score", 0)
 
-    # Safety threshold for weak or out-of-domain match
-    if score < 0.75:
+    if score is not None and score < 0.75:
         return {
             "original_question": user_query,
             "input_language": language,
