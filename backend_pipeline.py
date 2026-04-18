@@ -11,7 +11,6 @@ load_dotenv()
 
 COLLECTION_NAME = "dharma_qa_seed_en"
 
-
 def _get_secret(name: str) -> Optional[str]:
     value = os.getenv(name)
     if value:
