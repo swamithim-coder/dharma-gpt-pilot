@@ -142,12 +142,12 @@ def make_point(record: dict) -> PointStruct:
         id=record["id"],
         vector=embedding,
         payload={
-            "question": record["question"],
-            "answer": record["answer"],
-            "evidence": record.get("evidence"),
-            "source_basis": "Dharma seed Q&A",
-            "qualification": "General foundational definition."
-        }
+    "question": record["question"],
+    "answer": record["answer"],
+    "evidence": record.get("evidence"),
+    "source_basis": "Dharma seed Q&A",
+    "qualification": "General foundational definition."
+}
     )
 
 points = [make_point(r) for r in records]
