@@ -134,7 +134,7 @@ if st.session_state.response:
     st.divider()
     st.subheader("Answer")
 
-   st.markdown("### 🟢 Direct Answer")
+st.markdown("### 🟢 Direct Answer")
 st.markdown(f"""
 <div style='
     padding:15px;
