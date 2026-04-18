@@ -114,7 +114,7 @@ def retrieve_top_match(canonical_query: str) -> Dict[str, Any]:
     return {
         "direct_answer": payload.get("answer", "No answer found."),
         "source_basis": payload.get("source_basis", "Dharma seed Q&A"),
-        "evidence": f"Matched question = {payload.get('question', 'Unknown question')}",
+        "evidence": payload.get("evidence"),
         "qualification": payload.get("qualification", "General foundational definition."),
         "confidence": "High" if (top.score or 0) >= 0.70 else "Moderate",
         "matched_question": payload.get("question"),
