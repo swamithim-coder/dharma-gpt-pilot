@@ -144,6 +144,7 @@ def make_point(record: dict) -> PointStruct:
         payload={
             "question": record["question"],
             "answer": record["answer"],
+            "evidence": record.get("evidence"),
             "source_basis": "Dharma seed Q&A",
             "qualification": "General foundational definition."
         }
