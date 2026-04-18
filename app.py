@@ -134,8 +134,32 @@ if st.session_state.response:
     st.divider()
     st.subheader("Answer")
 
-    st.markdown("**Direct Answer**")
-    st.write(response["direct_answer"])
+   st.markdown("### 🟢 Direct Answer")
+st.markdown(f"""
+<div style='
+    padding:15px;
+    border-radius:10px;
+    background-color:#f0f8ff;
+    border:1px solid #ccc;
+    font-size:18px;
+'>
+{response["direct_answer"]}
+</div>
+""", unsafe_allow_html=True)
+
+# Show Evidence (if available)
+if "evidence" in response and response["evidence"]:
+    st.markdown("### 📜 Supporting Evidence")
+    st.markdown(f"""
+<div style='
+    padding:12px;
+    border-radius:8px;
+    background-color:#fff8e1;
+    border:1px solid #ddd;
+'>
+{response["evidence"]}
+</div>
+""", unsafe_allow_html=True)
 
     st.markdown("**Source Basis**")
     st.write(response["source_basis"] or "Not available")
