@@ -156,11 +156,39 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
     # Simple normalization for variant wording
     query_lower = user_query.lower()
 
-    if "truth" in query_lower or "satya" in query_lower:
-        user_query = "What is truth (Satya)?"
-    elif "ahimsa" in query_lower or "non violence" in query_lower or "non-violence" in query_lower:
-        user_query = "What is non-violence (Ahimsa)?"
+    query_lower = user_query.lower()
 
+# Core mappings
+if "truth" in query_lower or "satya" in query_lower:
+    user_query = "What is truth (Satya)?"
+
+elif "ahimsa" in query_lower or "non violence" in query_lower or "non-violence" in query_lower:
+    user_query = "What is non-violence (Ahimsa)?"
+
+elif "dharma" in query_lower:
+    user_query = "What is Dharma?"
+
+elif "karma" in query_lower:
+    user_query = "What is Karma?"
+
+elif "moksha" in query_lower or "liberation" in query_lower:
+    user_query = "What is Moksha?"
+
+# New additions (Phase A expansion)
+elif "duty" in query_lower:
+    user_query = "What is Dharma?"
+
+elif "action" in query_lower:
+    user_query = "What is Karma?"
+
+elif "freedom from rebirth" in query_lower or "cycle of birth" in query_lower:
+    user_query = "What is Moksha?"
+
+elif "honesty" in query_lower:
+    user_query = "What is truth (Satya)?"
+
+elif "violence" in query_lower and "non" not in query_lower:
+    user_query = "What is non-violence (Ahimsa)?"
     canonical_query = canonicalize_query(user_query, language)
     retrieval = retrieve_top_match(canonical_query)
 
