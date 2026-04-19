@@ -99,17 +99,6 @@ if st.session_state.response:
     st.divider()
     st.subheader("Answer")
 
-    ep 1 — Improve Direct Answer box
-
-In app.py, replace your current Direct Answer display block with this:
-
-Yes 👍 — you are almost right, just one small clarification.
-
-✅ Correct placement
-
-👉 The Evidence block should come immediately after the Direct Answer block.
-
-🎯 Final structure should be exactly like this:
 # Direct Answer
 st.markdown("### 🟢 Direct Answer")
 st.markdown(
