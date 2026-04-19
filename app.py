@@ -129,7 +129,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ✅ Evidence block comes RIGHT AFTER this
+
 if response.get("evidence"):
     st.markdown("### 📜 Supporting Evidence")
     st.markdown(
