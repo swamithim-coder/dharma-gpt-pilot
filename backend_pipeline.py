@@ -199,5 +199,4 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
         "confidence": retrieval.get("confidence", "Unknown"),
         "matched_question": retrieval.get("matched_question"),
         "score": retrieval.get("score"),
-    }
-    }
+    }  
