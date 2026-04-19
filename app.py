@@ -145,17 +145,17 @@ if st.session_state.response:
             unsafe_allow_html=True,
         )
 
-    if response.get("source_basis"):
-        st.write("**Source Basis**")
-        st.write(response["source_basis"])
+#    if response.get("source_basis"):
+#       st.write("**Source Basis**")
+#       st.write(response["source_basis"])
 
-    if response.get("qualification"):
-        st.write("**Qualification**")
-        st.write(response["qualification"])
+#    if response.get("qualification"):
+#       st.write("**Qualification**")
+#       st.write(response["qualification"])
 
-    if response.get("confidence"):
-        st.write("**Confidence**")
-        st.write(response["confidence"])
+#   if response.get("confidence"):
+#       st.write("**Confidence**")
+#       st.write(response["confidence"])
 
     st.write("**Feedback**")
     col1, col2 = st.columns(2)
