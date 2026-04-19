@@ -116,8 +116,7 @@ if st.session_state.response:
         unsafe_allow_html=True,
     )
 
-    st.write("DEBUG matched_question:", response.get("matched_question"))
-    st.write("DEBUG evidence:", response.get("evidence"))
+ 
     
     if "evidence" in response and response["evidence"]:
         st.markdown("### 📜 Supporting Evidence")
