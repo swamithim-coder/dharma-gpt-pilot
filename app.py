@@ -96,46 +96,46 @@ if st.button("Submit", type="primary"):
 if st.session_state.response:
     response = st.session_state.response
 
-st.divider()
-st.subheader("Answer")
+    st.divider()
+    st.subheader("Answer")
 
-# Direct Answer
-st.markdown("### 🟢 Direct Answer")
-st.markdown(
-    f"""
-    <div style='
-        padding:18px;
-        border-radius:12px;
-        background-color:#e6f2ff;
-        border:2px solid #4a90e2;
-        font-size:20px;
-        font-weight:500;
-        margin-bottom:15px;
-    '>
-    {response["direct_answer"]}
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-if response.get("evidence"):
-    st.markdown("### 📜 Supporting Evidence")
+    # Direct Answer
+    st.markdown("### 🟢 Direct Answer")
     st.markdown(
         f"""
         <div style='
-            padding:14px;
-            border-radius:10px;
-            background-color:#fff8e1;
-            border:1px solid #d6c26e;
-            font-size:16px;
-            margin-bottom:12px;
+            padding:18px;
+            border-radius:12px;
+            background-color:#e6f2ff;
+            border:2px solid #4a90e2;
+            font-size:20px;
+            font-weight:500;
+            margin-bottom:15px;
         '>
-        {response["evidence"]}
+        {response["direct_answer"]}
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+    # Supporting Evidence
+    if response.get("evidence"):
+        st.markdown("### 📜 Supporting Evidence")
+        st.markdown(
+            f"""
+            <div style='
+                padding:14px;
+                border-radius:10px;
+                background-color:#fff8e1;
+                border:1px solid #d6c26e;
+                font-size:16px;
+                margin-bottom:12px;
+            '>
+            {response["evidence"]}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     if response.get("source_basis"):
         st.write("**Source Basis**")
