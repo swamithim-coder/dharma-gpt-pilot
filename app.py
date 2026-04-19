@@ -32,10 +32,10 @@ def save_feedback(feedback_value: str) -> None:
         "language": language,
         "feedback": feedback_value,
         "direct_answer": response.get("direct_answer"),
-        "source_basis": response.get("source_basis"),
+#       "source_basis": response.get("source_basis"),
         "evidence": response.get("evidence"),
-        "qualification": response.get("qualification"),
-        "confidence": response.get("confidence"),
+#       "qualification": response.get("qualification"),
+#       "confidence": response.get("confidence"),
         "matched_question": response.get("matched_question"),
         "score": response.get("score"),
     }
