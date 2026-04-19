@@ -103,6 +103,14 @@ if st.session_state.response:
 
 In app.py, replace your current Direct Answer display block with this:
 
+Yes 👍 — you are almost right, just one small clarification.
+
+✅ Correct placement
+
+👉 The Evidence block should come immediately after the Direct Answer block.
+
+🎯 Final structure should be exactly like this:
+# Direct Answer
 st.markdown("### 🟢 Direct Answer")
 st.markdown(
     f"""
@@ -121,24 +129,24 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
- 
-    
-    if "evidence" in response and response["evidence"]:
-        st.markdown("### 📜 Supporting Evidence")
-        st.markdown(
-            f"""
-            <div style='
-                padding:12px;
-                border-radius:8px;
-                background-color:#fff8e1;
-                border:1px solid #ddd;
-                margin-bottom:12px;
-            '>
-            {response["evidence"]}
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+# ✅ Evidence block comes RIGHT AFTER this
+if response.get("evidence"):
+    st.markdown("### 📜 Supporting Evidence")
+    st.markdown(
+        f"""
+        <div style='
+            padding:14px;
+            border-radius:10px;
+            background-color:#fff8e1;
+            border:1px solid #d6c26e;
+            font-size:16px;
+            margin-bottom:12px;
+        '>
+        {response["evidence"]}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     if response.get("source_basis"):
         st.write("**Source Basis**")
