@@ -42,7 +42,6 @@ def save_feedback(feedback_value: str) -> None:
     log_interaction(feedback_entry)
     st.session_state.feedback_message = f"Feedback recorded: {feedback_value}"
 
-
 st.set_page_config(page_title="Dharma GPT Pilot", page_icon="🕉️", layout="centered")
 
 if "response" not in st.session_state:
