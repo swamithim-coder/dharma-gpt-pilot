@@ -85,10 +85,10 @@ if submit:
                 "question": user_query,
                 "language": language,
                 "direct_answer": response.get("direct_answer"),
-                "source_basis": response.get("source_basis"),
+#               "source_basis": response.get("source_basis"),
                 "evidence": response.get("evidence"),
-                "qualification": response.get("qualification"),
-                "confidence": response.get("confidence"),
+#               "qualification": response.get("qualification"),
+#               "confidence": response.get("confidence"),
                 "matched_question": response.get("matched_question"),
                 "score": response.get("score"),
             }
