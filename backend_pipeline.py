@@ -153,6 +153,18 @@ def translate_output_if_needed(text: str, target_language: str) -> str:
 
 
 def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
+    # Simple normalization for variant wording
+    query_lower = user_query.lower()
+
+    if "truth" in query_lower:
+        user_query = "What is truth (Satya)?"
+    elif "satya" in query_lower:
+        user_query = "What is truth (Satya)?"
+    elif "ahimsa" in query_lower:
+        user_query = "What is non-violence (Ahimsa)?"
+    elif "non violence" in query_lower or "non-violence" in query_lower:
+        user_query = "What is non-violence (Ahimsa)?"
+
     canonical_query = canonicalize_query(user_query, language)
     retrieval = retrieve_top_match(canonical_query)
 
@@ -187,4 +199,5 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
         "confidence": retrieval.get("confidence", "Unknown"),
         "matched_question": retrieval.get("matched_question"),
         "score": retrieval.get("score"),
+    }
     }
