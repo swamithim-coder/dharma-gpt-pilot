@@ -156,8 +156,7 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
     # Simple normalization for variant wording
     query_lower = user_query.lower()
 
-    query_lower = user_query.lower()
-
+  
 # Core mappings
 if "truth" in query_lower or "satya" in query_lower:
     user_query = "What is truth (Satya)?"
