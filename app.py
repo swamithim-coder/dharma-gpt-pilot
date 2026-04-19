@@ -99,22 +99,27 @@ if st.session_state.response:
     st.divider()
     st.subheader("Answer")
 
-    st.markdown("### 🟢 Direct Answer")
-    st.markdown(
-        f"""
-        <div style='
-            padding:15px;
-            border-radius:10px;
-            background-color:#f0f8ff;
-            border:1px solid #ccc;
-            font-size:18px;
-            margin-bottom:12px;
-        '>
-        {response["direct_answer"]}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    ep 1 — Improve Direct Answer box
+
+In app.py, replace your current Direct Answer display block with this:
+
+st.markdown("### 🟢 Direct Answer")
+st.markdown(
+    f"""
+    <div style='
+        padding:18px;
+        border-radius:12px;
+        background-color:#e6f2ff;
+        border:2px solid #4a90e2;
+        font-size:20px;
+        font-weight:500;
+        margin-bottom:15px;
+    '>
+    {response["direct_answer"]}
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
  
     
