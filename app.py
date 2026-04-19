@@ -10,7 +10,6 @@ from backend_pipeline import build_final_response
 SUPPORTED_LANGUAGES = ["English", "Tamil", "Hindi", "Telugu"]
 LOG_FILE = Path("pilot_log.jsonl")
 
-
 def log_interaction(entry: Dict[str, Any]) -> None:
     try:
         with LOG_FILE.open("a", encoding="utf-8") as f:
