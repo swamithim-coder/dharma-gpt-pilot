@@ -96,8 +96,8 @@ if st.button("Submit", type="primary"):
 if st.session_state.response:
     response = st.session_state.response
 
-    st.divider()
-    st.subheader("Answer")
+st.divider()
+st.subheader("Answer")
 
 # Direct Answer
 st.markdown("### 🟢 Direct Answer")
