@@ -323,6 +323,17 @@ def make_point(record: dict) -> PointStruct:
         }
     )
 
+seen_questions = set()
+unique_records = []
+
+for r in records:
+    q = r["question"].strip().lower()
+    if q not in seen_questions:
+        seen_questions.add(q)
+        unique_records.append(r)
+
+records = unique_records
+
 points = [make_point(r) for r in records]
 
 batch_size = 5
