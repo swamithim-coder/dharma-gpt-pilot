@@ -56,10 +56,19 @@ if "last_language" not in st.session_state:
 st.title("🕉️ Dharma GPT Pilot")
 st.caption("Pilot Console v1")
 
-user_query = st.text_area("Ask your Dharma question", height=80)
+col1, col2 = st.columns([4,1])
+
+with col1:
+    user_query = st.text_area("Ask your Dharma question", height=70)
+
+with col2:
+    st.write("")  # spacing
+    st.write("")
+    submit = st.button("Submit", use_container_width=True)
+
 language = st.selectbox("Language", SUPPORTED_LANGUAGES)
 
-if st.button("Submit", type="primary"):
+if submit:
     st.session_state.feedback_message = ""
 
     if not user_query.strip():
