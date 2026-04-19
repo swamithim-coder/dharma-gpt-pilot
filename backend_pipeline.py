@@ -9,7 +9,6 @@ from qdrant_client import QdrantClient
 
 load_dotenv()
 
-
 COLLECTION_NAME = "dharma_qa_seed_en"
 
 def _get_secret(name: str) -> Optional[str]:
