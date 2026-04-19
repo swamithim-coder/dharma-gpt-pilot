@@ -156,13 +156,9 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
     # Simple normalization for variant wording
     query_lower = user_query.lower()
 
-    if "truth" in query_lower:
+    if "truth" in query_lower or "satya" in query_lower:
         user_query = "What is truth (Satya)?"
-    elif "satya" in query_lower:
-        user_query = "What is truth (Satya)?"
-    elif "ahimsa" in query_lower:
-        user_query = "What is non-violence (Ahimsa)?"
-    elif "non violence" in query_lower or "non-violence" in query_lower:
+    elif "ahimsa" in query_lower or "non violence" in query_lower or "non-violence" in query_lower:
         user_query = "What is non-violence (Ahimsa)?"
 
     canonical_query = canonicalize_query(user_query, language)
@@ -177,7 +173,7 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
             "canonical_query": canonical_query,
             "direct_answer": "I do not currently have a reliable Dharma answer for this question. Please rephrase the question or consult a scholar.",
             "source_basis": "No reliable match found",
-            "evidence": f"Top semantic score = {score:.2f}",
+            "evidence": None,
             "qualification": "Answer not found / out of scope",
             "confidence": "Low",
             "matched_question": None,
@@ -199,4 +195,4 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
         "confidence": retrieval.get("confidence", "Unknown"),
         "matched_question": retrieval.get("matched_question"),
         "score": retrieval.get("score"),
-    }  
+    } 
