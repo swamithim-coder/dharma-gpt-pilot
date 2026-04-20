@@ -119,7 +119,7 @@ def retrieve_top_match(canonical_query: str) -> Dict[str, Any]:
         "matched_question": payload.get("question"),
         "score": top.score,
     }
-
+  
 
 def translate_output_if_needed(text: str, target_language: str) -> str:
     text = (text or "").strip()
