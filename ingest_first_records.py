@@ -336,6 +336,15 @@ records = unique_records
 
 points = [make_point(r) for r in records]
 
+points = [make_point(r) for r in records]
+
+
+print("RECORD COUNT:", len(records))
+print("POINT COUNT:", len(points))
+print("COLLECTION:", collection_name)
+
+batch_size = 5
+for i in range(0, len(points), batch_size):
 batch_size = 5
 for i in range(0, len(points), batch_size):
     batch = points[i:i + batch_size]
