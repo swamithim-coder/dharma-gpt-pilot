@@ -108,10 +108,10 @@ if st.session_state.response:
 
     # Direct Answer
     st.markdown("### 🟢 Direct Answer")
-st.markdown(
-    f"""
-    <div style='
-        padding:18
+    st.markdown(
+        f"""
+        <div style='
+            padding:18
             border-radius:12px;
             background-color:#e6f2ff;
             border:2px solid #4a90e2;
