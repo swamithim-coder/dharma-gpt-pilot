@@ -104,142 +104,49 @@ if submit:
 if st.session_state.response:
     response = st.session_state.response
 
-    st.divider()
-    st.subheader("Answer")
+    st.markdown("## Answer")
 
-  # Direct Answer
-st.markdown("### 🟢 Direct Answer")
-st.markdown(
-    f"""
-    <div style='
-        padding:18px;
-        border-radius:12px;
-        background-color:#e6f2ff;
-        border:2px solid #4a90e2;
-        font-size:20px;
-        font-weight:500;
-        margin-bottom:15px;
-        color:#000000;
-    '>
-    {response["direct_answer"]}
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# ✅ SAME LEVEL (no extra spaces)
-if response.get("evidence"):
-    st.markdown("### 📜 Supporting Evidence")
-    st.markdown(
-        f"""
-        <div style='
-            padding:14px;
-            border-radius:10px;
-            background-color:#fff8e1;
-            border:1px solid #d6c26e;
-            font-size:16px;
-            margin-bottom:12px;
-            color:#000000;
-        '>
-        {response["evidence"]}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-# ✅ SAME LEVEL (no extra spaces)
-if response.get("evidence"):
-    st.markdown("### 📜 Supporting Evidence")
-    st.markdown(
-        f"""
-        <div style='
-            padding:14px;
-            border-radius:10px;
-            background-color:#fff8e1;
-            border:1px solid #d6c26e;
-            font-size:16px;
-            margin-bottom:12px;
-            color:#000000;
-        '>
-        {response["evidence"]}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    # Supporting Evidence
     # Direct Answer
-st.markdown("### 🟢 Direct Answer")
-st.markdown(
-    f"""
-    <div style='
-        padding:18px;
-        border-radius:12px;
-        background-color:#e6f2ff;
-        border:2px solid #4a90e2;
-        font-size:20px;
-        font-weight:500;
-        margin-bottom:15px;
-        color:#000000;
-    '>
-    {response["direct_answer"]}
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# ✅ SAME LEVEL (no extra spaces)
-# Direct Answer
-st.markdown("### 🟢 Direct Answer")
-st.markdown(
-    f"""
-    <div style='
-        padding:18px;
-        border-radius:12px;
-        background-color:#e6f2ff;
-        border:2px solid #4a90e2;
-        font-size:20px;
-        font-weight:500;
-        margin-bottom:15px;
-        color:#000000;
-    '>
-    {response["direct_answer"]}
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# ✅ SAME LEVEL (no extra spaces)
-if response.get("evidence"):
-    st.markdown("### 📜 Supporting Evidence")
+    st.markdown("### 🟢 Direct Answer")
     st.markdown(
         f"""
         <div style='
-            padding:14px;
-            border-radius:10px;
-            background-color:#fff8e1;
-            border:1px solid #d6c26e;
-            font-size:16px;
-            margin-bottom:12px;
+            padding:18px;
+            border-radius:12px;
+            background-color:#e6f2ff;
+            border:2px solid #4a90e2;
+            font-size:20px;
+            font-weight:500;
+            margin-bottom:15px;
             color:#000000;
         '>
-        {response["evidence"]}
+        {response["direct_answer"]}
         </div>
         """,
         unsafe_allow_html=True,
     )
-#    if response.get("source_basis"):
-#       st.write("**Source Basis**")
-#       st.write(response["source_basis"])
 
-#    if response.get("qualification"):
-#       st.write("**Qualification**")
-#       st.write(response["qualification"])
+    # Supporting Evidence
+    if response.get("evidence"):
+        st.markdown("### 📜 Supporting Evidence")
+        st.markdown(
+            f"""
+            <div style='
+                padding:14px;
+                border-radius:10px;
+                background-color:#fff8e1;
+                border:1px solid #d6c26e;
+                font-size:16px;
+                margin-bottom:12px;
+                color:#000000;
+            '>
+            {response["evidence"]}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-#   if response.get("confidence"):
-#       st.write("**Confidence**")
-#       st.write(response["confidence"])
-
-    st.write("**Feedback**")
+    st.markdown("### 👍 Feedback")
     col1, col2 = st.columns(2)
 
     with col1:
