@@ -1,7 +1,5 @@
 import os
-import sys
-import streamlit as st
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -9,22 +7,18 @@ from qdrant_client import QdrantClient
 
 load_dotenv()
 
-COLLECTION_NAME = "dharma_qa_seed_en"
+QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "dharma_chunks")
+
 
 def _get_secret(name: str) -> Optional[str]:
     value = os.getenv(name)
-    if value:
-        return value
-    try:
-        return st.secrets[name]
-    except Exception:
-        return None
+    return value if value else None
 
 
 def _get_openai_client() -> OpenAI:
     api_key = _get_secret("OPENAI_API_KEY")
     if not api_key:
-        raise RuntimeError("OPENAI_API_KEY not found in .env or Streamlit secrets")
+        raise RuntimeError("OPENAI_API_KEY not found in .env")
     return OpenAI(api_key=api_key)
 
 
@@ -33,95 +27,30 @@ def _get_qdrant_client() -> QdrantClient:
     qdrant_api_key = _get_secret("QDRANT_API_KEY")
 
     if not qdrant_url:
-        raise RuntimeError("QDRANT_URL not found in .env or Streamlit secrets")
+        raise RuntimeError("QDRANT_URL not found in .env")
     if not qdrant_api_key:
-        raise RuntimeError("QDRANT_API_KEY not found in .env or Streamlit secrets")
+        raise RuntimeError("QDRANT_API_KEY not found in .env")
 
     return QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
 
 
-def canonicalize_query(user_query: str, language: str) -> str:
-    user_query = (user_query or "").strip()
-    if not user_query:
+def translate_to_english(text: str, source_language: str) -> str:
+    text = (text or "").strip()
+    if not text:
         return ""
 
-    if language == "English":
-        return user_query
+    if source_language == "English":
+        return text
 
     client = _get_openai_client()
-
     response = client.responses.create(
-        model="gpt-5.4-mini",
-        input=[
-            {
-                "role": "system",
-                "content": (
-                    "Translate the user's query into concise natural English for backend retrieval. "
-                    "Return only the English question. Do not explain."
-                ),
-            },
-            {
-                "role": "user",
-                "content": user_query,
-            },
-        ],
+        model="gpt-4.1-mini",
+        input=f"Translate this from {source_language} to simple English. Return only the translation.\n\n{text}",
     )
-
     return response.output_text.strip()
 
 
-def retrieve_top_match(canonical_query: str) -> Dict[str, Any]:
-    if not canonical_query.strip():
-        return {
-            "direct_answer": "No question provided.",
-            "source_basis": "No input",
-            "evidence": None,
-            "qualification": "Please enter a valid question.",
-            "confidence": "Low",
-            "matched_question": None,
-            "score": None,
-        }
-
-    oa_client = _get_openai_client()
-    qdrant = _get_qdrant_client()
-
-    embedding = oa_client.embeddings.create(
-        model="text-embedding-3-small",
-        input=canonical_query
-    ).data[0].embedding
-
-    results = qdrant.query_points(
-        collection_name=COLLECTION_NAME,
-        query=embedding,
-        limit=1
-    ).points
-
-    if not results:
-        return {
-            "direct_answer": "No reliable answer found yet in the current pilot corpus.",
-            "source_basis": "No matching source",
-            "evidence": None,
-            "qualification": "This topic may need corpus expansion or scholar review.",
-            "confidence": "Low",
-            "matched_question": None,
-            "score": None,
-        }
-
-    top = results[0]
-    payload = top.payload or {}
-
-    return {
-        "direct_answer": payload.get("answer", "No answer found."),
-        "source_basis": payload.get("source_basis", "Dharma seed Q&A"),
-        "evidence": payload.get("evidence"),
-        "qualification": payload.get("qualification", "General foundational definition."),
-        "confidence": "High" if (top.score or 0) >= 0.70 else "Moderate",
-        "matched_question": payload.get("question"),
-        "score": top.score,
-    }
-  
-
-def translate_output_if_needed(text: str, target_language: str) -> str:
+def translate_from_english(text: str, target_language: str) -> str:
     text = (text or "").strip()
     if not text:
         return ""
@@ -130,25 +59,82 @@ def translate_output_if_needed(text: str, target_language: str) -> str:
         return text
 
     client = _get_openai_client()
-
     response = client.responses.create(
-        model="gpt-5.4-mini",
-        input=[
-            {
-                "role": "system",
-                "content": (
-                    f"Translate the user's English text into natural {target_language}. "
-                    "Preserve important Sanskrit terms where appropriate. "
-                    "Return only the translated text."
-                ),
-            },
-            {
-                "role": "user",
-                "content": text,
-            },
-        ],
+        model="gpt-4.1-mini",
+        input=f"Translate this English text into natural {target_language}. Preserve key Sanskrit terms where useful. Return only the translation.\n\n{text}",
+    )
+    return response.output_text.strip()
+
+
+def get_embedding(text: str) -> List[float]:
+    client = _get_openai_client()
+    response = client.embeddings.create(
+        model="text-embedding-3-small",
+        input=text,
+    )
+    return response.data[0].embedding
+
+
+def retrieve_chunks(query_en: str, top_k: int = 3) -> List[Dict[str, Any]]:
+    qdrant = _get_qdrant_client()
+    query_vector = get_embedding(query_en)
+
+    results = qdrant.search(
+        collection_name=QDRANT_COLLECTION,
+        query_vector=query_vector,
+        limit=top_k,
+        with_payload=True,
     )
 
+    chunks: List[Dict[str, Any]] = []
+    for r in results:
+        payload = r.payload or {}
+        chunks.append(
+            {
+                "text": payload.get("text", ""),
+                "source": payload.get("source", "Unknown"),
+                "page": payload.get("page", ""),
+                "language": payload.get("language", ""),
+                "score": float(r.score),
+            }
+        )
+
+    return chunks
+
+
+def generate_answer(query_en: str, chunks: List[Dict[str, Any]]) -> str:
+    client = _get_openai_client()
+
+    context_parts = []
+    for c in chunks:
+        source_line = f"Source: {c['source']}"
+        if c.get("page") != "":
+            source_line += f", Page: {c['page']}"
+        text_line = f"Text: {c['text']}"
+        context_parts.append(source_line + "\n" + text_line)
+
+    context = "\n\n".join(context_parts)
+
+    prompt = f"""
+You are a Dharma assistant.
+
+Answer the user's question only from the provided context.
+Do not invent facts or citations.
+If the context is insufficient, say so clearly.
+
+User question:
+{query_en}
+
+Context:
+{context}
+
+Return a concise answer followed by a short evidence-based explanation.
+""".strip()
+
+    response = client.responses.create(
+        model="gpt-4.1",
+        input=prompt,
+    )
     return response.output_text.strip()
 
 
@@ -157,7 +143,6 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
 
     chunks = retrieve_chunks(query_en, top_k=3)
 
-    # Debug prints (temporary)
     print("QUERY_EN:", query_en)
     print("CHUNKS:", chunks)
 
@@ -176,8 +161,6 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
             "matched_question": query_en,
             "score": 0.0,
         }
-
-    
 
     answer_en = generate_answer(query_en, chunks)
 
