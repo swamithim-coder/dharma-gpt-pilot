@@ -128,7 +128,28 @@ st.markdown(
 )
 
     # Supporting Evidence
-    if response.get("evidence"):
+    # Direct Answer
+st.markdown("### 🟢 Direct Answer")
+st.markdown(
+    f"""
+    <div style='
+        padding:18px;
+        border-radius:12px;
+        background-color:#e6f2ff;
+        border:2px solid #4a90e2;
+        font-size:20px;
+        font-weight:500;
+        margin-bottom:15px;
+        color:#000000;
+    '>
+    {response["direct_answer"]}
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ✅ SAME LEVEL (no extra spaces)
+if response.get("evidence"):
     st.markdown("### 📜 Supporting Evidence")
     st.markdown(
         f"""
