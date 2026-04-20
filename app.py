@@ -115,7 +115,7 @@ if st.session_state.response:
     st.markdown(
         f"""
         <div style='
-            padding:18
+            padding:18px;
             border-radius:12px;
             background-color:#e6f2ff;
             border:2px solid #4a90e2;
