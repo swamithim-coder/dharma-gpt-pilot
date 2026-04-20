@@ -338,7 +338,6 @@ points = [make_point(r) for r in records]
 
 points = [make_point(r) for r in records]
 
-
 print("RECORD COUNT:", len(records))
 print("POINT COUNT:", len(points))
 print("COLLECTION:", collection_name)
