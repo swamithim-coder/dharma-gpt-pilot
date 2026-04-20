@@ -61,7 +61,11 @@ language = st.selectbox("Language", SUPPORTED_LANGUAGES)
 col1, col2 = st.columns([4, 1])
 
 with col1:
-    user_query = st.text_area("Ask your Dharma question", height=70)
+    user_query = st.text_area(
+    "Ask your Dharma question",
+    height=70,
+    key="main_question_box"
+)
 
 with col2:
     st.write("")
