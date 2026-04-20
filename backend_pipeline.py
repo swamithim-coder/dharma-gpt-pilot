@@ -153,62 +153,59 @@ def translate_output_if_needed(text: str, target_language: str) -> str:
 
 
 def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
-    query_lower = user_query.lower()
+    query_en = translate_to_english(user_query, language)
 
-    # Core mappings
-    if "truth" in query_lower or "satya" in query_lower:
-        user_query = "What is truth (Satya)?"
-    elif "ahimsa" in query_lower or "non violence" in query_lower or "non-violence" in query_lower:
-        user_query = "What is non-violence (Ahimsa)?"
-    elif "dharma" in query_lower:
-        user_query = "What is Dharma?"
-    elif "karma" in query_lower:
-        user_query = "What is Karma?"
-    elif "moksha" in query_lower or "liberation" in query_lower:
-        user_query = "What is Moksha?"
-    elif "duty" in query_lower:
-        user_query = "What is Dharma?"
-    elif "action" in query_lower:
-        user_query = "What is Karma?"
-    elif "freedom from rebirth" in query_lower or "cycle of birth" in query_lower:
-        user_query = "What is Moksha?"
-    elif "honesty" in query_lower:
-        user_query = "What is truth (Satya)?"
-    elif "violence" in query_lower and "non" not in query_lower:
-        user_query = "What is non-violence (Ahimsa)?"
+    chunks = retrieve_chunks(query_en, top_k=3)
 
-    canonical_query = canonicalize_query(user_query, language)
-    retrieval = retrieve_top_match(canonical_query)
+    # Debug prints (temporary)
+    print("QUERY_EN:", query_en)
+    print("CHUNKS:", chunks)
 
-    score = retrieval.get("score", 0)
-
-    if score is not None and score < 0.70:
+    if not chunks:
+        no_result = "I could not find relevant material in the retrieved text."
+        final_text = translate_from_english(no_result, language)
         return {
             "original_question": user_query,
             "input_language": language,
-            "canonical_query": canonical_query,
-            "direct_answer": "I do not currently have a reliable Dharma answer for this question. Please rephrase the question or consult a scholar.",
-            "source_basis": "No reliable match found",
-            "evidence": None,
+            "canonical_query": query_en,
+            "direct_answer": final_text,
+            "source_basis": "",
+            "evidence": "",
             "qualification": "Answer not found / out of scope",
             "confidence": "Low",
-            "matched_question": None,
-            "score": score,
+            "matched_question": query_en,
+            "score": 0.0,
         }
 
-    display_answer = translate_output_if_needed(
-        retrieval["direct_answer"], language
+    
+
+    answer_en = generate_answer(query_en, chunks)
+
+    evidence_text = "\n\n".join(
+        [
+            f"Source: {c.get('source', 'Unknown')}, Page: {c.get('page', '')}\n{c.get('text', '')[:300]}"
+            for c in chunks
+        ]
     )
+
+    final_answer = translate_from_english(answer_en, language)
 
     return {
         "original_question": user_query,
         "input_language": language,
-        "canonical_query": canonical_query,
-        "direct_answer": display_answer,
-        "source_basis": retrieval.get("source_basis"),
-        "evidence": retrieval.get("evidence"),
-        "qualification": retrieval.get("qualification"),
-        "confidence": retrieval.get("confidence", "Unknown"),
-        "matched_question": retrieval.get("matched_question"),
-        "score": retrieval.get("score"),
+        "canonical_query": query_en,
+        "direct_answer": final_answer,
+        "source_basis": ", ".join(
+            [
+                f"{c.get('source', 'Unknown')} p.{c.get('page', '')}"
+                if c.get("page") != ""
+                else f"{c.get('source', 'Unknown')}"
+                for c in chunks
+            ]
+        ),
+        "evidence": evidence_text,
+        "qualification": "Generated from retrieved text",
+        "confidence": "Medium",
+        "matched_question": query_en,
+        "score": chunks[0].get("score", 0.0),
     }
