@@ -215,7 +215,11 @@ if retrieval.get("evidence"):
         retrieval.get("evidence"),
         language
     )
-    
+
+# DEBUG (safe)
+print("DEBUG original evidence:", retrieval.get("evidence"))
+print("DEBUG translated evidence:", translated_evidence)
+
 return {
     "original_question": user_query,
     "input_language": language,
@@ -223,4 +227,8 @@ return {
     "direct_answer": display_answer,
     "source_basis": retrieval.get("source_basis"),
     "evidence": translated_evidence,
-    }
+    "qualification": retrieval.get("qualification"),
+    "confidence": retrieval.get("confidence", "Unknown"),
+    "matched_question": retrieval.get("matched_question"),
+    "score": retrieval.get("score"),
+}
