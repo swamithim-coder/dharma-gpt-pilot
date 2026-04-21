@@ -197,17 +197,30 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
 
     display_answer = translate_output_if_needed(
         retrieval["direct_answer"], language
+       
+    )
+    translated_evidence = None
+    if retrieval.get("evidence"):
+        translated_evidence = translate_output_if_needed(
+            retrieval.get("evidence"),
+            language
+    ) 
+    display_answer = translate_output_if_needed(
+    retrieval["direct_answer"], language
+)
+
+translated_evidence = None
+if retrieval.get("evidence"):
+    translated_evidence = translate_output_if_needed(
+        retrieval.get("evidence"),
+        language
     )
 
-    return {
-        "original_question": user_query,
-        "input_language": language,
-        "canonical_query": canonical_query,
-        "direct_answer": display_answer,
-        "source_basis": retrieval.get("source_basis"),
-        "evidence": retrieval.get("evidence"),
-        "qualification": retrieval.get("qualification"),
-        "confidence": retrieval.get("confidence", "Unknown"),
-        "matched_question": retrieval.get("matched_question"),
-        "score": retrieval.get("score"),
+return {
+    "original_question": user_query,
+    "input_language": language,
+    "canonical_query": canonical_query,
+    "direct_answer": display_answer,
+    "source_basis": retrieval.get("source_basis"),
+    "evidence": translated_evidence,
     }
