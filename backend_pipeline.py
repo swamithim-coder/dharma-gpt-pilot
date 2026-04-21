@@ -216,9 +216,6 @@ if retrieval.get("evidence"):
         language
     )
     
-print("DEBUG original evidence:", retrieval.get("evidence"))
-print("DEBUG translated evidence:", translated_evidence) 
-
 return {
     "original_question": user_query,
     "input_language": language,
