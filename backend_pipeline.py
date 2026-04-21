@@ -152,6 +152,25 @@ def translate_output_if_needed(text: str, target_language: str) -> str:
     return response.output_text.strip()
 
 
+def generate_simple_explanation(answer: str) -> str:
+    client = _get_openai_client()
+
+    prompt = f"""
+Explain the following Dharma concept in very simple terms for a common person.
+Keep it short (2-3 sentences). Do not repeat the original sentence exactly.
+
+Concept:
+{answer}
+"""
+
+    response = client.responses.create(
+        model="gpt-4.1-mini",
+        input=prompt
+    )
+
+    return response.output_text.strip()
+
+
 def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
     query_lower = user_query.lower()
 
@@ -197,38 +216,28 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
 
     display_answer = translate_output_if_needed(
         retrieval["direct_answer"], language
-       
     )
+
     translated_evidence = None
     if retrieval.get("evidence"):
         translated_evidence = translate_output_if_needed(
             retrieval.get("evidence"),
             language
-    ) 
-    display_answer = translate_output_if_needed(
-    retrieval["direct_answer"], language
-)
+        )
 
-translated_evidence = None
-if retrieval.get("evidence"):
-    translated_evidence = translate_output_if_needed(
-        retrieval.get("evidence"),
-        language
-    )
+    simple_explanation = generate_simple_explanation(retrieval["direct_answer"])
+    simple_explanation = translate_output_if_needed(simple_explanation, language)
 
-# DEBUG (safe)
-print("DEBUG original evidence:", retrieval.get("evidence"))
-print("DEBUG translated evidence:", translated_evidence)
-
-return {
-    "original_question": user_query,
-    "input_language": language,
-    "canonical_query": canonical_query,
-    "direct_answer": display_answer,
-    "source_basis": retrieval.get("source_basis"),
-    "evidence": translated_evidence,
-    "qualification": retrieval.get("qualification"),
-    "confidence": retrieval.get("confidence", "Unknown"),
-    "matched_question": retrieval.get("matched_question"),
-    "score": retrieval.get("score"),
-}
+    return {
+        "original_question": user_query,
+        "input_language": language,
+        "canonical_query": canonical_query,
+        "direct_answer": display_answer,
+        "source_basis": retrieval.get("source_basis"),
+        "evidence": translated_evidence,
+        "explanation": simple_explanation,
+        "qualification": retrieval.get("qualification"),
+        "confidence": retrieval.get("confidence", "Unknown"),
+        "matched_question": retrieval.get("matched_question"),
+        "score": retrieval.get("score"),
+    }
