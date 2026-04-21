@@ -157,6 +157,7 @@ if submit:
 if st.session_state.response:
     response = st.session_state.response
 
+    st.markdown("---")
     st.markdown("## Answer")
 
     # Direct Answer
