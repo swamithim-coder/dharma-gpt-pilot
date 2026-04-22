@@ -244,17 +244,18 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
     elif "violence" in query_lower and "non" not in query_lower:
         user_query = "What is non-violence (Ahimsa)?"
 
-canonical_query = canonicalize_query(user_query, language)
+    canonical_query = canonicalize_query(user_query, language)
 
-pdf_chunks = retrieve_pdf_chunks(canonical_query, limit=3)
+    pdf_chunks = retrieve_pdf_chunks(canonical_query, limit=3)
 
-retrieval = retrieve_top_match(canonical_query)
+    retrieval = retrieve_top_match(canonical_query)
 
-rag_answer = None
-if pdf_chunks:
-    rag_answer = generate_rag_answer(canonical_query, pdf_chunks)
+    rag_answer = None
+    if pdf_chunks:
+        rag_answer = generate_rag_answer(canonical_query, pdf_chunks)
 
-score = retrieval.get("score", 0)
+    score = retrieval.get("score", 0)
+
     if score is not None and score < 0.70:
         return {
             "original_question": user_query,
@@ -267,9 +268,43 @@ score = retrieval.get("score", 0)
             "confidence": "Low",
             "matched_question": None,
             "score": score,
+        }
+
+    # ✅ RAG + fallback logic
+    final_answer = retrieval["direct_answer"]
+    if rag_answer:
+        final_answer = rag_answer
+
+    display_answer = translate_output_if_needed(
+        final_answer, language
+    )
+
+    translated_evidence = None
+    if retrieval.get("evidence"):
+        translated_evidence = translate_output_if_needed(
+            retrieval.get("evidence"),
+            language
+        )
+
+    simple_explanation = generate_simple_explanation(retrieval["direct_answer"])
+    simple_explanation = translate_output_if_needed(simple_explanation, language)
+
+    return {
+        "original_question": user_query,
+        "input_language": language,
+        "canonical_query": canonical_query,
+        "direct_answer": display_answer,
+        "source_basis": retrieval.get("source_basis"),
+        "evidence": translated_evidence,
+        "explanation": simple_explanation,
+        "qualification": retrieval.get("qualification"),
+        "confidence": retrieval.get("confidence", "Unknown"),
+        "matched_question": retrieval.get("matched_question"),
+        "score": retrieval.get("score"),
     }
 
     final_answer = retrieval["direct_answer"]
+
     if rag_answer:
         final_answer = rag_answer
 
