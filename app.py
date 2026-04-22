@@ -157,15 +157,6 @@ if submit:
 if st.session_state.response:
     response = st.session_state.response
 
-    st.markdown("<hr style='margin-top:10px; margin-bottom:20px;'>", unsafe_allow_html=True)
-    st.markdown("## Answer")
-
-# -----------------------------
-# Always render saved response
-# -----------------------------
-if st.session_state.response:
-    response = st.session_state.response
-
     st.markdown("## Answer")
 
     # Direct Answer
