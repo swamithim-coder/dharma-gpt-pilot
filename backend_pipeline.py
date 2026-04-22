@@ -244,16 +244,17 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
     elif "violence" in query_lower and "non" not in query_lower:
         user_query = "What is non-violence (Ahimsa)?"
 
-    canonical_query = canonicalize_query(user_query, language)
-    pdf_chunks = retrieve_pdf_chunks(canonical_query, limit=3)
-    retrieval = retrieve_top_match(canonical_query)
-   
-    rag_answer = None
-    if pdf_chunks:
-    rag_answer = generate_rag_answer(canonical_query, pdf_chunks)
-    
-    score = retrieval.get("score", 0)
+canonical_query = canonicalize_query(user_query, language)
 
+pdf_chunks = retrieve_pdf_chunks(canonical_query, limit=3)
+
+retrieval = retrieve_top_match(canonical_query)
+
+rag_answer = None
+if pdf_chunks:
+    rag_answer = generate_rag_answer(canonical_query, pdf_chunks)
+
+score = retrieval.get("score", 0)
     if score is not None and score < 0.70:
         return {
             "original_question": user_query,
@@ -266,12 +267,16 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
             "confidence": "Low",
             "matched_question": None,
             "score": score,
-        }
+    }
+
+    final_answer = retrieval["direct_answer"]
+    if rag_answer:
+        final_answer = rag_answer
 
     display_answer = translate_output_if_needed(
-        retrieval["direct_answer"], language
+        final_answer, language
     )
-
+    
     translated_evidence = None
     if retrieval.get("evidence"):
         translated_evidence = translate_output_if_needed(
