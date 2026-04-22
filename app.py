@@ -233,16 +233,4 @@ if st.session_state.response:
     if st.session_state.feedback_message:
         st.success(st.session_state.feedback_message)
 
-    st.markdown("### 👍 Feedback")
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("Helpful"):
-            save_feedback("Helpful")
-
-    with col2:
-        if st.button("Needs Correction"):
-            save_feedback("Needs Correction")
-
-    if st.session_state.feedback_message:
-        st.success(st.session_state.feedback_message)
+    
