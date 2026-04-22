@@ -120,6 +120,55 @@ def retrieve_top_match(canonical_query: str) -> Dict[str, Any]:
         "score": top.score,
     }
 
+def retrieve_pdf_chunks(canonical_query: str, limit: int = 3) -> list[dict]:
+    oa_client = _get_openai_client()
+    qdrant = _get_qdrant_client()
+
+    embedding = oa_client.embeddings.create(
+        model="text-embedding-3-small",
+        input=canonical_query
+    ).data[0].embedding
+
+    results = qdrant.query_points(
+        collection_name=COLLECTION_NAME,
+        query=embedding,
+        limit=limit
+    ).points
+
+    chunks = []
+    for r in results:
+        payload = r.payload or {}
+        if payload.get("text"):
+            chunks.append(payload)
+
+    return chunks
+
+
+def generate_rag_answer(user_query: str, chunks: list[dict]) -> str:
+    client = _get_openai_client()
+
+    context = "\n\n".join(
+        [c.get("text", "") for c in chunks if c.get("text")]
+    )
+
+    prompt = f"""
+Answer the user's question only from the provided context.
+If the context is insufficient, say so briefly.
+Keep the answer concise and clear.
+
+Question:
+{user_query}
+
+Context:
+{context}
+"""
+
+    response = client.responses.create(
+        model="gpt-4.1-mini",
+        input=prompt
+    )
+
+    return response.output_text.strip()
 
 def translate_output_if_needed(text: str, target_language: str) -> str:
     text = (text or "").strip()
