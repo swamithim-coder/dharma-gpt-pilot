@@ -160,65 +160,87 @@ if st.session_state.response:
     st.markdown("<hr style='margin-top:10px; margin-bottom:20px;'>", unsafe_allow_html=True)
     st.markdown("## Answer")
 
+# -----------------------------
+# Always render saved response
+# -----------------------------
+if st.session_state.response:
+    response = st.session_state.response
+
+    st.markdown("## Answer")
+
     # Direct Answer
-st.markdown("### 🟢 Direct Answer")
-st.markdown(
-    f"""
-    <div style='
-        padding:18px;
-        border-radius:12px;
-        background-color:#e6f2ff;
-        border:2px solid #4a90e2;
-        font-size:20px;
-        font-weight:500;
-        margin-bottom:15px;
-        color:#000000;
-    '>
-    {response["direct_answer"]}
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# Simple Explanation
-if response.get("explanation"):
-    st.markdown("### 💡 Simple Explanation")
+    st.markdown("### 🟢 Direct Answer")
     st.markdown(
         f"""
         <div style='
-            padding:14px;
-            border-radius:10px;
-            background-color:#f5f5f5;
-            border:1px solid #d0d0d0;
-            font-size:16px;
-            margin-bottom:12px;
+            padding:18px;
+            border-radius:12px;
+            background-color:#e6f2ff;
+            border:2px solid #4a90e2;
+            font-size:20px;
+            font-weight:500;
+            margin-bottom:15px;
             color:#000000;
         '>
-        {response["explanation"]}
+        {response["direct_answer"]}
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-# Supporting Evidence
-if response.get("evidence"):
-    st.markdown("### 📜 Supporting Evidence")
-    st.markdown(
-        f"""
-        <div style='
-            padding:14px;
-            border-radius:10px;
-            background-color:#fff8e1;
-            border:1px solid #d6c26e;
-            font-size:16px;
-            margin-bottom:12px;
-            color:#000000;
-        '>
-        {response["evidence"]}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    # Simple Explanation
+    if response.get("explanation"):
+        st.markdown("### 💡 Simple Explanation")
+        st.markdown(
+            f"""
+            <div style='
+                padding:14px;
+                border-radius:10px;
+                background-color:#f5f5f5;
+                border:1px solid #d0d0d0;
+                font-size:16px;
+                margin-bottom:12px;
+                color:#000000;
+            '>
+            {response["explanation"]}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    # Supporting Evidence
+    if response.get("evidence"):
+        st.markdown("### 📜 Supporting Evidence")
+        st.markdown(
+            f"""
+            <div style='
+                padding:14px;
+                border-radius:10px;
+                background-color:#fff8e1;
+                border:1px solid #d6c26e;
+                font-size:16px;
+                margin-bottom:12px;
+                color:#000000;
+            '>
+            {response["evidence"]}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("### 👍 Feedback")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("Helpful"):
+            save_feedback("Helpful")
+
+    with col2:
+        if st.button("Needs Correction"):
+            save_feedback("Needs Correction")
+
+    if st.session_state.feedback_message:
+        st.success(st.session_state.feedback_message)
 
     st.markdown("### 👍 Feedback")
     col1, col2 = st.columns(2)
