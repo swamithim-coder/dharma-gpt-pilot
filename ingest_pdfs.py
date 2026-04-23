@@ -81,4 +81,4 @@ def ingest_pdf(file_path):
 
 
 if __name__ == "__main__":
-    ingest_pdf("dharma_text_pdf")  # 🔁 change this
+    ingest_pdf("Samkshepa_Dharma_Sasthra.pdf")  # 🔁 change this
