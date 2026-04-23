@@ -58,27 +58,33 @@ def ingest_pdf(file_path):
 
     print(f"Total chunks: {len(chunks)}")
 
-    points = []
+    batch_size = 3
 
-    for i, chunk in enumerate(chunks):
-        embedding = get_embedding(chunk)
+    for start in range(0, len(chunks), batch_size):
+        batch_chunks = chunks[start:start + batch_size]
+        points = []
 
-        points.append({
-            "id": i,
-            "vector": embedding,
-            "payload": {
-                "text": chunk,
-                "source": Path(file_path).name
-            }
-        })
+        for i, chunk in enumerate(batch_chunks, start=start):
+            embedding = get_embedding(chunk)
 
-    client_qdrant.upsert(
-        collection_name=COLLECTION_NAME,
-        points=points
-    )
+            points.append({
+                "id": i,
+                "vector": embedding,
+                "payload": {
+                    "text": chunk,
+                    "source": Path(file_path).name
+                }
+            })
+
+        client_qdrant.upsert(
+            collection_name=COLLECTION_NAME,
+            points=points,
+            wait=True,
+            timeout=120
+        )
+
+        print(f"Uploaded batch {start // batch_size + 1}: {len(points)} chunk(s)")
 
     print("Upload complete!")
-
-
 if __name__ == "__main__":
-    ingest_pdf("Samkshepa_Dharma_Sasthra.pdf")  # 🔁 change this
+   ingest_pdf("Bhagavad_Gita.pdf")   # 🔁 change this
