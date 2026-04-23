@@ -284,10 +284,10 @@ def build_final_response(user_query: str, language: str) -> Dict[str, Any]:
     translated_evidence = retrieval.get("evidence")
 
     if language != "English" and translated_evidence:
-    translated_evidence = translate_output_if_needed(
-        translated_evidence,
-        language
-    )  
+        translated_evidence = translate_output_if_needed(
+            translated_evidence,
+            language
+        )  
     
     simple_explanation = generate_simple_explanation(retrieval["direct_answer"])
     simple_explanation = translate_output_if_needed(simple_explanation, language)
