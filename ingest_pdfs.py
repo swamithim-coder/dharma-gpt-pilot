@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from qdrant_client import QdrantClient
 from PyPDF2 import PdfReader
+from qdrant_client.http.models import Distance, VectorParams
+
 
 load_dotenv()
 
@@ -20,6 +22,12 @@ client_qdrant = QdrantClient(
     api_key=QDRANT_API_KEY
 )
 
+
+if not client_qdrant.collection_exists(COLLECTION_NAME):
+    client_qdrant.create_collection(
+        collection_name=COLLECTION_NAME,
+        vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
+    )
 
 # 🔹 Step 1 — read PDF
 def extract_text_from_pdf(file_path):
@@ -86,5 +94,7 @@ def ingest_pdf(file_path):
         print(f"Uploaded batch {start // batch_size + 1}: {len(points)} chunk(s)")
 
     print("Upload complete!")
+if __name__ == "__main__":
+   ingest_pdf("Bhagavad_Gita.pdf")   # 🔁 change this
 if __name__ == "__main__":
    ingest_pdf("Bhagavad_Gita.pdf")   # 🔁 change this
