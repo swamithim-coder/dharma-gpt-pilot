@@ -310,7 +310,9 @@ Text:
                 st.markdown("### 📖 Evidence")
 
                 # Show model-generated evidence summary
-                st.success(sec.replace("Evidence", "").strip())
+                clean_text = sec.replace("Evidence", "").replace(":", "").strip()
+                st.success(clean_text)
+
 
                 st.markdown("---")
 
