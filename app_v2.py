@@ -267,6 +267,7 @@ STRICT RULES:
 Text:
 {answer}
 """
+    }
             ]
         )
         final_answer = translated.choices[0].message.content
