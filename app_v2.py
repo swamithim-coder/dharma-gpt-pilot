@@ -257,15 +257,16 @@ if st.button("Get Answer"):
                 {"role": "user", "content": f"""Translate the following into natural, fluent {user_language}.
 
 STRICT RULES:
-- Preserve ALL structure exactly
-- Preserve ALL citations like [Chunk X] exactly
-- Do NOT add new information
-- Do NOT generalize or summarize
-- Do NOT remove any part
+- Use ONLY the provided context
+- Do NOT introduce any information not present in the context
+- Do NOT infer beyond what is explicitly stated
+- Preserve accuracy of the source meaning
+- If multiple sources are present, explicitly name them and explain their relationship
+- Example: The Dharma Sasthra defines..., while the Bhagavad Gita explains..., together indicating...
 
 Text:
 {answer}
-"""}
+"""
             ]
         )
         final_answer = translated.choices[0].message.content
