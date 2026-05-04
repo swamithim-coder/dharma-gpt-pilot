@@ -340,7 +340,7 @@ Text:
 
                         seen_pages = set()
 
-                        for item in items:
+                        for item in sorted(items, key=lambda x: str(x["page"])):
                             page = item["page"]
 
                             if page in seen_pages:
