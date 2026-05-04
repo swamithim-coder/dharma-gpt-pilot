@@ -221,8 +221,13 @@ if st.button("Get Answer"):
         "Explain how the answer is rooted in the teaching. Use a slightly formal tone such as 'The text indicates that...' or 'It is taught that...'.\n\n"
 
         "Reasoning:\n"
-        "Always provide a clear explanation of how the teaching leads to the conclusion. Do not leave this section empty.\n\n"
-        "Present the logical connection step by step, showing how the teaching leads to the conclusion. Keep it structured and clear.\n\n"
+        "Provide a clear explanation strictly based on the retrieved context.\n"
+        "- Do NOT introduce any idea not explicitly present in the context\n"
+        "- Refer to the teachings using phrases like 'The text states...' or 'It is indicated that...'\n"
+        "- If multiple sources are present, explicitly explain how they relate or differ\n"
+        "- Show step-by-step how the conclusion is derived ONLY from the given text\n"
+        "- Avoid generic philosophical language unless directly supported by the context\n\n"
+
 
         "Evidence:\n"
         "Quote or closely paraphrase the relevant portion of the text. Be precise and faithful to the wording.\n\n"
