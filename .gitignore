@@ -1,0 +1,9 @@
+.env
+.streamlit/secrets.toml
+qdrant_data/
+__pycache__/
+*.pyc
+feedback_log.csv
+*.pdf
+logs/
+*.docx
