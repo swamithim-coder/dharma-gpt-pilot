@@ -247,8 +247,7 @@ if st.button("Get Answer"):
         "  * Priest: clear and authoritative\n"
         "  * Householder: simple and practical\n"
         "  * Student: very simple, avoid formal phrasing\n\n"
-
-
+        "For any derived conclusion, clearly indicate whether it is directly stated in the text or a logical interpretation.\n"
 
         "Evidence:\n"
         "Quote or closely paraphrase the relevant portion of the text. Be precise and faithful to the wording.\n\n"
