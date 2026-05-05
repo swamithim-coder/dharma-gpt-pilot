@@ -238,7 +238,12 @@ if st.button("Get Answer"):
         "- Refer to the teachings using phrases like 'The text states...' or 'It is indicated that...'\n"
         "- If multiple sources are present, explicitly explain how they relate or differ\n"
         "- Show step-by-step how the conclusion is derived ONLY from the given text\n"
-        "- Avoid generic philosophical language unless directly supported by the context\n\n"
+        "- Avoid generic philosophical language unless directly supported by the context\n"
+        "- Adapt reasoning style based on user type:\n"
+        "  * Priest: clear and authoritative\n"
+        "  * Householder: simple and practical\n"
+        "  * Student: very simple, avoid formal phrasing\n\n"
+
 
 
         "Evidence:\n"
