@@ -236,7 +236,7 @@ if st.button("Get Answer"):
         "Provide a clear explanation strictly based on the retrieved context.\n"
         "- Do NOT introduce any idea not explicitly present in the context\n"
         "- Refer to the teachings using phrases like 'The text states...' or 'It is indicated that...'\n"
-        "- If multiple sources are present, explicitly explain how they relate or differ\n"
+        "- If multiple sources are present, you MUST explicitly refer to at least two different sources and explain how they relate to each other\n"
         "- Show step-by-step how the conclusion is derived ONLY from the given text\n"
         "- Avoid generic philosophical language unless directly supported by the context\n"
         "- Adapt reasoning style based on user type:\n"
