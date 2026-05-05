@@ -252,6 +252,7 @@ if st.button("Get Answer"):
         "Evidence:\n"
         "You MUST always provide evidence.\n"
         "If reasoning uses multiple sources, provide at least one supporting excerpt from EACH source.\n"
+        "For Student: provide at least one short and simple supporting excerpt.\n"
         "Do not skip the Evidence section under any circumstances.\n" 
         "Quote or closely paraphrase the relevant portion of the text. Be precise and faithful to the wording.\n\n"
 
