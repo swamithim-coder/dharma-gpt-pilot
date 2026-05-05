@@ -203,14 +203,26 @@ if st.button("Get Answer"):
         "- If unsure, say: \"Not explicitly stated in the provided text\"\n\n"
         "Do NOT expand beyond the wording of the context.\n"
         "Stay as close as possible to the source meaning.\n\n"
+        
+        f"User type: {user_type}\n\n" 
+        "Adapt the answer style based on the user type:\n"
+        
+        "If user is Priest:\n"
+        "- Provide clear and authoritative explanation\n"
+        "- Include named references where helpful (e.g., Manu, Apasthamba)\n"
+        "- Focus on correct understanding and application\n\n"
 
-        f"User type: {user_type}\n\n"
+        "If user is Householder:\n"
+        "- Use simple and clear language\n"
+        "- Focus on practical daily life application\n"
+        "- Avoid complex terminology\n\n"
 
-        "Adapt the answer style:\n"
-        "- Scholar: detailed and technical\n"
-        "- Priest: ritual/practice oriented\n"
-        "- Householder: practical\n"
-        "- Student: simple\n\n"
+        "If user is Student:\n"
+        "- Use very simple language\n"
+        "- Explain step-by-step\n"
+        "- Emphasize clarity and understanding\n"
+        "- Help build confidence in the teaching\n\n"
+
 
         "Format:\n\n"
 
@@ -233,7 +245,11 @@ if st.button("Get Answer"):
         "Quote or closely paraphrase the relevant portion of the text. Be precise and faithful to the wording.\n\n"
 
         "User Guidance:\n"
-        "Provide a simple and practical takeaway for daily life, expressed in a calm and helpful manner.\n\n"
+        "Provide guidance appropriate to the user type:\n"
+        "- Priest: how to apply or teach this\n"
+        "- Householder: what to do in daily life\n"
+        "- Student: simple takeaway to understand and follow\n\n"
+
 
         "Confidence:\n"
         "State confidence clearly based on how directly the answer is supported by the text.\n"
