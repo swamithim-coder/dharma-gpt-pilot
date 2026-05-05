@@ -250,6 +250,9 @@ if st.button("Get Answer"):
         "For any derived conclusion, clearly indicate whether it is directly stated in the text or a logical interpretation.\n"
 
         "Evidence:\n"
+        "You MUST always provide evidence.\n"
+        "If reasoning uses multiple sources, provide at least one supporting excerpt from EACH source.\n"
+        "Do not skip the Evidence section under any circumstances.\n" 
         "Quote or closely paraphrase the relevant portion of the text. Be precise and faithful to the wording.\n\n"
 
         "User Guidance:\n"
