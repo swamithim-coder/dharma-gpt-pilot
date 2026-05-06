@@ -463,7 +463,7 @@ filter_language = st.selectbox(
     ["All", "English", "Telugu", "Tamil", "Hindi"]
 )
 
-file_path = r"C:\Users\Swami Thim\dharma_ai_pilot\feedback_log.csv"
+file_path = "feedback_log.csv"
 
 if os.path.exists(file_path):
 
