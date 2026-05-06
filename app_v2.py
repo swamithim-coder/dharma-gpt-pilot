@@ -446,7 +446,8 @@ if st.button("Submit Feedback", key="submit_feedback"):
             ])
 
         st.success("✅ Feedback saved successfully")
-
+        st.write("DEBUG: Writing feedback to CSV") 
+   
     except Exception as e:
         st.error(f"❌ Error saving feedback: {e}")
 
