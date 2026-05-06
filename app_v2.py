@@ -414,7 +414,7 @@ if st.button("Submit Feedback", key="submit_feedback"):
     try:
         import os
 
-        file_path = r"C:\Users\Swami Thim\dharma_ai_pilot\feedback_log.csv"
+        file_path = "feedback_log.csv"
 
         file_exists = os.path.isfile(file_path)
 
