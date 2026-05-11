@@ -203,7 +203,6 @@ if st.button("Get Answer"):
         "- If unsure, say: \"Not explicitly stated in the provided text\"\n\n"
         "Do NOT expand beyond the wording of the context.\n"
         "Stay as close as possible to the source meaning.\n\n"
-        
         f"User type: {user_type}\n\n" 
         "Adapt the answer style based on the user type:\n"
         
@@ -223,16 +222,15 @@ if st.button("Get Answer"):
         "- Emphasize clarity and understanding\n"
         "- Help build confidence in the teaching\n\n"
 
-
         "Format:\n\n"
 
-        "Direct Answer:\n"
+        "[DIRECT_ANSWER]\n"
         "Provide a clear and composed answer in a traditional teaching tone. Use precise language. Avoid casual phrasing.\n\n"
 
-        "Traditional Basis:\n"
+        "[TRADITIONAL_BASIS]\n"
         "Explain how the answer is rooted in the teaching. Use a slightly formal tone such as 'The text indicates that...' or 'It is taught that...'.\n\n"
 
-        "Reasoning:\n"
+       "[REASONING]\n"
         "Provide a clear explanation strictly based on the retrieved context.\n"
         "- Do NOT introduce any idea not explicitly present in the context\n"
         "- Refer to the teachings using phrases like 'The text states...' or 'It is indicated that...'\n"
@@ -249,21 +247,20 @@ if st.button("Get Answer"):
         "  * Student: very simple, avoid formal phrasing\n\n"
         "For any derived conclusion, clearly indicate whether it is directly stated in the text or a logical interpretation.\n"
 
-        "Evidence:\n"
+        "[EVIDENCE]\n"
         "You MUST always provide evidence.\n"
         "If reasoning uses multiple sources, provide at least one supporting excerpt from EACH source.\n"
-        "For Student: provide at least one short and simple supporting excerpt.\n"
+        "For Student: provide at least one short and simple supporting excerpt.\n" 
         "Do not skip the Evidence section under any circumstances.\n" 
         "Quote or closely paraphrase the relevant portion of the text. Be precise and faithful to the wording.\n\n"
 
-        "User Guidance:\n"
+        "[USER_GUIDANCE]\n"
         "Provide guidance appropriate to the user type:\n"
         "- Priest: how to apply or teach this\n"
         "- Householder: what to do in daily life\n"
         "- Student: simple takeaway to understand and follow\n\n"
-
-
-        "Confidence:\n"
+        
+        "[CONFIDENCE]\n"
         "State confidence clearly based on how directly the answer is supported by the text.\n"
     )
 
@@ -289,14 +286,21 @@ STRICT RULES:
 - Do NOT introduce any information not present in the context
 - Do NOT infer beyond what is explicitly stated
 - Preserve accuracy of the source meaning
+- Do NOT translate, remove, or modify section tags such as:
+  [DIRECT_ANSWER]
+  [TRADITIONAL_BASIS]
+  [REASONING]
+  [EVIDENCE]
+  [USER_GUIDANCE]
+  [CONFIDENCE]
+
 - If multiple sources are present, explicitly name them and explain their relationship
 - Example: The Dharma Sasthra defines..., while the Bhagavad Gita explains..., together indicating...
 
 Text:
 {answer}
 """
-    }
-            ]
+    }        ]
         )
         final_answer = translated.choices[0].message.content
     else:
@@ -319,29 +323,30 @@ Text:
 
             sec = highlight_chunks(sec)
 
-            if "Direct Answer" in sec or "ప్రత్యక్ష" in sec or "நேரடி" in sec:
+            if "[DIRECT_ANSWER]" in sec:
                 st.markdown("### 🧠 Direct Answer")
-                st.info(sec.replace("Direct Answer", "").strip())
+                clean_text = sec.replace("[DIRECT_ANSWER]", "").strip()
+                st.info(clean_text)
                 st.markdown("---")
 
-            elif "Traditional Basis" in sec or "సాంప్రదాయ" in sec or "பாரம்பரிய" in sec:
+
+            elif "[TRADITIONAL_BASIS]" in sec:
                 st.markdown("### 📜 Traditional Basis")
-                st.write(sec.replace("Traditional Basis", "").strip())
+                clean_text = sec.replace("[TRADITIONAL_BASIS]", "").strip()
+                st.write(clean_text)
                 st.markdown("---")
 
-            elif "Reasoning" in sec or "తర్కం" in sec or "காரணம்" in sec:
+            elif "[REASONING]" in sec:
                 st.markdown("### 🧩 Reasoning")
-                st.write(sec.replace("Reasoning", "").strip())
+                clean_text = sec.replace("[REASONING]", "").strip()
+                st.write(clean_text)
                 st.markdown("---")
 
-            elif "Evidence" in sec or "సాక్ష" in sec or "ஆதாரம்" in sec:
+            elif "[EVIDENCE]" in sec:
                 st.markdown("### 📖 Evidence")
 
-                # Show model-generated evidence summary
-                clean_text = sec.replace("Evidence", "").replace(":", "").strip()
+                clean_text = sec.replace("[EVIDENCE]", "").strip()
                 st.success(clean_text)
-
-
                 st.markdown("---")
 
                 # 🔹 Show actual retrieved sources grouped by source
@@ -384,14 +389,16 @@ Text:
                 else:
                     st.write("No evidence sources found.")
 
-            elif "User Guidance" in sec or "వినియోగదారు" in sec or "பயனர்" in sec:
+            elif "[USER_GUIDANCE]" in sec:
                 st.markdown("### 👤 User Guidance")
-                st.warning(sec.replace("User Guidance", "").strip())
+                clean_text = sec.replace("[USER_GUIDANCE]", "").strip()
+                st.warning(clean_text)
                 st.markdown("---")
 
-            elif "Confidence" in sec or "నమ్మకం" in sec or "நம்பிக்கை" in sec:
+            elif "[CONFIDENCE]" in sec:
                 st.markdown("### 🔎 Confidence")
-                st.write(sec.replace("Confidence", "").strip())
+                clean_text = sec.replace("[CONFIDENCE]", "").strip()
+                st.write(clean_text)
 
             else:
                 st.write(sec)
@@ -447,7 +454,7 @@ if st.button("Submit Feedback", key="submit_feedback"):
 
         st.success("✅ Feedback saved successfully")
         
-   
+
     except Exception as e:
         st.error(f"❌ Error saving feedback: {e}")
 
